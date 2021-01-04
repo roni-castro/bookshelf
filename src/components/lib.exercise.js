@@ -11,7 +11,6 @@ const buttonVariants = {
     color: '#434449',
   },
 }
-
 const Button = styled.button(
   {
     padding: '10px 15px',
@@ -23,15 +22,10 @@ const Button = styled.button(
 )
 
 const Input = styled.input({
-  background: '#F1F2F7',
-  padding: '8px 12px',
-  border: '1px solid #f1f1f4',
   borderRadius: '3px',
-})
-
-const FormGroup = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
+  border: '1px solid #f1f1f4',
+  background: '#f1f2f7',
+  padding: '8px 12px',
 })
 
 const CircleButton = styled.button({
@@ -61,4 +55,9 @@ const Dialog = styled(ReachDialog)({
   },
 })
 
-export {CircleButton, Dialog, Button, Input, FormGroup}
+const FormGroup = styled.div({
+  display: 'flex',
+  flexDirection: 'column',
+})
+
+export {Button, Input, CircleButton, Dialog, FormGroup}
