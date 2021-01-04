@@ -44,7 +44,7 @@ function LoginForm({onSubmit, submitButton}) {
       </FormGroup>
       <div>
         {React.cloneElement(submitButton, {type: 'submit'})}
-        <Spinner />
+        <Spinner css={{marginLeft: 5}} />
       </div>
     </form>
   )
