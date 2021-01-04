@@ -1,8 +1,7 @@
 import styled from '@emotion/styled/macro'
 import {Dialog as ReachDialog} from '@reach/dialog'
-
-import * as colors from '../styles/colors'
-import * as mq from '../styles/media-queries'
+import * as colors from 'styles/colors'
+import * as mq from 'styles/media-queries'
 
 const buttonVariants = {
   primary: {
@@ -40,7 +39,7 @@ const CircleButton = styled.button({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  background: 'white',
+  background: colors.base,
   color: colors.text,
   border: `1px solid ${colors.gray10}`,
   cursor: 'pointer',
