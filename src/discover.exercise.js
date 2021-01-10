@@ -1,8 +1,7 @@
 /** @jsx jsx */
 import {jsx} from '@emotion/core'
 
-import './bootstrap'
-import React from 'react'
+import * as React from 'react'
 import Tooltip from '@reach/tooltip'
 import {FaSearch, FaTimes} from 'react-icons/fa'
 import {Input, BookListUL, Spinner} from './components/lib'
@@ -10,89 +9,38 @@ import {BookRow} from './components/book-row'
 import {client} from './utils/api-client'
 import * as colors from './styles/colors'
 
-const SearchStatus = {
-  Idle: 'idle',
-  Loading: 'loading',
-  Success: 'success',
-  Failure: 'failure',
-}
-
-const SearchActions = {
-  Search: 'books/search',
-  Loading: 'books/loading',
-  Success: 'books/success',
-  Failure: 'books/failure',
-}
-
-const initialState = {
-  status: SearchStatus.Idle,
-  data: null,
-  error: null,
-  query: '',
-  queried: false,
-}
-
-const SearchReducer = (state = initialState, action = {}) => {
-  switch (action.type) {
-    case SearchActions.Search: {
-      return {
-        ...state,
-        queried: true,
-        query: action.query,
-      }
-    }
-    case SearchActions.Loading: {
-      return {
-        ...state,
-        status: SearchStatus.Loading,
-      }
-    }
-    case SearchActions.Success: {
-      return {
-        ...state,
-        status: SearchStatus.Success,
-        data: action.data,
-        error: null,
-      }
-    }
-    case SearchActions.Failure: {
-      return {
-        ...state,
-        status: SearchStatus.Failure,
-        error: action.error,
-      }
-    }
-    default: {
-      throw new Error(`action ${action} is not available`)
-    }
-  }
-}
-
 function DiscoverBooksScreen() {
-  const [{status, error, data, queried, query}, dispatch] = React.useReducer(
-    SearchReducer,
-    initialState,
-  )
+  const [status, setStatus] = React.useState('idle')
+  const [data, setData] = React.useState()
+  const [error, setError] = React.useState()
+  const [query, setQuery] = React.useState()
+  const [queried, setQueried] = React.useState(false)
+
+  const isLoading = status === 'loading'
+  const isSuccess = status === 'success'
+  const isError = status === 'error'
 
   React.useEffect(() => {
-    if (queried) {
-      dispatch({type: SearchActions.Loading})
-      client(`books?query=${encodeURIComponent(query)}`)
-        .then(response => {
-          dispatch({type: SearchActions.Success, data: response})
-        })
-        .catch(error => dispatch({type: SearchActions.Failure, error}))
+    if (!queried) {
+      return
     }
+    setStatus('loading')
+    client(`books?query=${encodeURIComponent(query)}`).then(
+      responseData => {
+        setData(responseData)
+        setStatus('success')
+      },
+      errorData => {
+        setError(errorData)
+        setStatus('error')
+      },
+    )
   }, [query, queried])
-
-  const isLoading = status === SearchStatus.Loading
-  const isSuccess = status === SearchStatus.Success
-  const isError = status === SearchStatus.Failure
 
   function handleSearchSubmit(event) {
     event.preventDefault()
-    const query = event.target.elements['search'].value
-    dispatch({type: SearchActions.Search, query})
+    setQueried(true)
+    setQuery(event.target.elements.search.value)
   }
 
   return (
@@ -127,6 +75,7 @@ function DiscoverBooksScreen() {
           </label>
         </Tooltip>
       </form>
+
       {isError ? (
         <div css={{color: colors.danger}}>
           <p>There was an error:</p>
