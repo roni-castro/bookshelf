@@ -4,10 +4,11 @@ import {jsx} from '@emotion/core'
 import './bootstrap'
 import React from 'react'
 import Tooltip from '@reach/tooltip'
-import {FaSearch} from 'react-icons/fa'
+import {FaSearch, FaTimes} from 'react-icons/fa'
 import {Input, BookListUL, Spinner} from './components/lib'
 import {BookRow} from './components/book-row'
 import {client} from './utils/api-client'
+import * as colors from './styles/colors'
 
 const SearchStatus = {
   Idle: 'idle',
@@ -26,6 +27,7 @@ const SearchActions = {
 const initialState = {
   status: SearchStatus.Idle,
   data: null,
+  error: null,
   query: '',
   queried: false,
 }
@@ -50,12 +52,14 @@ const SearchReducer = (state = initialState, action = {}) => {
         ...state,
         status: SearchStatus.Success,
         data: action.data,
+        error: null,
       }
     }
     case SearchActions.Failure: {
       return {
         ...state,
         status: SearchStatus.Failure,
+        error: action.error,
       }
     }
     default: {
@@ -65,7 +69,7 @@ const SearchReducer = (state = initialState, action = {}) => {
 }
 
 function DiscoverBooksScreen() {
-  const [{status, data, queried, query}, dispatch] = React.useReducer(
+  const [{status, error, data, queried, query}, dispatch] = React.useReducer(
     SearchReducer,
     initialState,
   )
@@ -77,12 +81,13 @@ function DiscoverBooksScreen() {
         .then(response => {
           dispatch({type: SearchActions.Success, data: response})
         })
-        .catch(() => dispatch({type: SearchActions.Failure}))
+        .catch(error => dispatch({type: SearchActions.Failure, error}))
     }
   }, [query, queried])
 
   const isLoading = status === SearchStatus.Loading
   const isSuccess = status === SearchStatus.Success
+  const isError = status === SearchStatus.Failure
 
   function handleSearchSubmit(event) {
     event.preventDefault()
@@ -111,11 +116,23 @@ function DiscoverBooksScreen() {
                 background: 'transparent',
               }}
             >
-              {isLoading ? <Spinner /> : <FaSearch aria-label="search" />}
+              {isLoading ? (
+                <Spinner />
+              ) : isError ? (
+                <FaTimes aria-label="error" css={{color: colors.danger}} />
+              ) : (
+                <FaSearch aria-label="search" />
+              )}
             </button>
           </label>
         </Tooltip>
       </form>
+      {isError ? (
+        <div css={{color: colors.danger}}>
+          <p>There was an error:</p>
+          <pre>{error.message}</pre>
+        </div>
+      ) : null}
 
       {isSuccess ? (
         data?.books?.length ? (
