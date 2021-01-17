@@ -338,6 +338,43 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "Luke-kb",
+      "name": "Luke-kb",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/7802494?v=4",
+      "profile": "https://github.com/Luke-kb",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "Aprillion",
+      "name": "Peter Hozák",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1087670?v=4",
+      "profile": "http://peter.hozak.info/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "cxc421",
+      "name": "Chris Chuang",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/18439296?v=4",
+      "profile": "https://github.com/cxc421",
+      "contributions": [
+        "code",
+        "bug"
+      ]
+    },
+    {
+      "login": "ValentinH",
+      "name": "Valentin Hervieu",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/2678610?v=4",
+      "profile": "https://valentin-hervieu.fr",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
