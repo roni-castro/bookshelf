@@ -12,7 +12,7 @@ import {
 import Tooltip from '@reach/tooltip'
 import {useMutation, queryCache} from 'react-query'
 import {client} from 'utils/api-client'
-import {useListItems} from 'utils/list-items'
+import {useListItem} from 'utils/list-items'
 import {useAsync} from 'utils/hooks'
 import * as colors from 'styles/colors'
 import {CircleButton, Spinner} from './lib'
@@ -49,8 +49,7 @@ function TooltipButton({label, highlight, onClick, icon, ...rest}) {
 }
 
 function StatusButtons({user, book}) {
-  const {data: listItems} = useListItems(user)
-  const listItem = listItems?.find(li => li.bookId === book.id) ?? null
+  const listItem = useListItem(user, book.id)
 
   const [update] = useMutation(
     updates =>

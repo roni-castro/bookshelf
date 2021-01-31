@@ -8,3 +8,7 @@ export function useListItems(user) {
       client(`list-items`, {token: user.token}).then(data => data.listItems),
   })
 }
+export function useListItem(user, bookId) {
+  const {data: listItems} = useListItems(user)
+  return listItems?.find(li => li.bookId === bookId) ?? null
+}
