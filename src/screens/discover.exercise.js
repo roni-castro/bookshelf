@@ -18,8 +18,8 @@ function DiscoverBooksScreen({user}) {
   )
 
   React.useEffect(() => {
-    return () => refetchBookSearchQuery(query)
-  }, [query])
+    return () => refetchBookSearchQuery(user)
+  }, [user])
 
   function handleSearchSubmit(event) {
     event.preventDefault()
