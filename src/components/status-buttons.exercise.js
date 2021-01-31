@@ -10,7 +10,7 @@ import {
   FaTimesCircle,
 } from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
-import {queryCache, useMutation, useQuery} from 'react-query'
+import {useQuery, useMutation, queryCache} from 'react-query'
 import {client} from 'utils/api-client'
 import {useAsync} from 'utils/hooks'
 import * as colors from 'styles/colors'
@@ -48,39 +48,30 @@ function TooltipButton({label, highlight, onClick, icon, ...rest}) {
 }
 
 function StatusButtons({user, book}) {
-  const {data} = useQuery('list-items', () =>
-    client('list-items', {token: user.token}),
-  )
+  const {data: listItems} = useQuery({
+    queryKey: 'list-items',
+    queryFn: () =>
+      client(`list-items`, {token: user.token}).then(data => data.listItems),
+  })
+  const listItem = listItems?.find(li => li.bookId === book.id) ?? null
 
-  const listItem = data?.listItems.find(listItem => listItem.bookId === book.id)
-
-  const [mutateRemoteListItem] = useMutation(
-    id => {
-      return client(`list-items/${id}`, {
-        method: 'DELETE',
-        token: user.token,
-      })
-    },
-    {onSettled: () => queryCache.invalidateQueries('list-items')},
-  )
-
-  const [mutateUpdateListItem] = useMutation(
-    ({id, finishDate}) => {
-      const data = {id, finishDate}
-      return client(`list-items/${id}`, {
+  const [update] = useMutation(
+    updates =>
+      client(`list-items/${updates.id}`, {
         method: 'PUT',
-        data,
+        data: updates,
         token: user.token,
-      })
-    },
+      }),
     {onSettled: () => queryCache.invalidateQueries('list-items')},
   )
 
-  const [mutateCreateListItem] = useMutation(
-    () => {
-      const data = {bookId: book.id}
-      return client('list-items', {method: 'POST', data, token: user.token})
-    },
+  const [remove] = useMutation(
+    ({id}) => client(`list-items/${id}`, {method: 'DELETE', token: user.token}),
+    {onSettled: () => queryCache.invalidateQueries('list-items')},
+  )
+
+  const [create] = useMutation(
+    ({bookId}) => client(`list-items`, {data: {bookId}, token: user.token}),
     {onSettled: () => queryCache.invalidateQueries('list-items')},
   )
 
@@ -91,18 +82,14 @@ function StatusButtons({user, book}) {
           <TooltipButton
             label="Unmark as read"
             highlight={colors.yellow}
-            onClick={() =>
-              mutateUpdateListItem({id: listItem.id, finishDate: null})
-            }
+            onClick={() => update({id: listItem.id, finishDate: null})}
             icon={<FaBook />}
           />
         ) : (
           <TooltipButton
             label="Mark as read"
             highlight={colors.green}
-            onClick={() =>
-              mutateUpdateListItem({id: listItem.id, finishDate: Date.now()})
-            }
+            onClick={() => update({id: listItem.id, finishDate: Date.now()})}
             icon={<FaCheckCircle />}
           />
         )
@@ -111,14 +98,14 @@ function StatusButtons({user, book}) {
         <TooltipButton
           label="Remove from list"
           highlight={colors.danger}
-          onClick={() => mutateRemoteListItem(listItem.id)}
+          onClick={() => remove({id: listItem.id})}
           icon={<FaMinusCircle />}
         />
       ) : (
         <TooltipButton
           label="Add to list"
           highlight={colors.indigo}
-          onClick={mutateCreateListItem}
+          onClick={() => create({bookId: book.id})}
           icon={<FaPlusCircle />}
         />
       )}

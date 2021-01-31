@@ -2,7 +2,7 @@
 import {jsx} from '@emotion/core'
 
 import * as React from 'react'
-import {queryCache, useMutation} from 'react-query'
+import {useMutation, queryCache} from 'react-query'
 import {client} from 'utils/api-client'
 import {FaStar} from 'react-icons/fa'
 import * as colors from 'styles/colors'
@@ -21,16 +21,13 @@ const visuallyHiddenCSS = {
 function Rating({listItem, user}) {
   const [isTabbing, setIsTabbing] = React.useState(false)
   const [update] = useMutation(
-    ({id, rating}) => {
-      return client(`list-items/${listItem.id}`, {
+    updates =>
+      client(`list-items/${updates.id}`, {
         method: 'PUT',
-        data: {id, rating},
+        data: updates,
         token: user.token,
-      })
-    },
-    {
-      onSettled: () => queryCache.invalidateQueries('list-items'),
-    },
+      }),
+    {onSettled: () => queryCache.invalidateQueries('list-items')},
   )
 
   React.useEffect(() => {

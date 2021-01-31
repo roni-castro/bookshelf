@@ -27,16 +27,19 @@ const loadingBook = {
 
 function BookScreen({user}) {
   const {bookId} = useParams()
-  const {data} = useQuery([`book`, {bookId}], () =>
-    client(`books/${bookId}`, {token: user.token}),
-  )
+  const {data: book = loadingBook} = useQuery({
+    queryKey: ['book', {bookId}],
+    queryFn: () =>
+      client(`books/${bookId}`, {token: user.token}).then(data => data.book),
+  })
 
-  const {data: listItemsData} = useQuery('list-items', () =>
-    client('list-items/', {token: user.token}),
-  )
-  const listItem = listItemsData?.listItems.find(item => item.bookId === bookId)
+  const {data: listItems} = useQuery({
+    queryKey: 'list-items',
+    queryFn: () =>
+      client(`list-items`, {token: user.token}).then(data => data.listItems),
+  })
+  const listItem = listItems?.find(li => li.bookId === bookId) ?? null
 
-  const book = data?.book ?? loadingBook
   const {title, author, coverImageUrl, publisher, synopsis} = book
 
   return (
@@ -119,17 +122,18 @@ function ListItemTimeframe({listItem}) {
 }
 
 function NotesTextarea({listItem, user}) {
-  const [mutateUpdateNotes] = useMutation(
-    ({id, notes}) => {
-      const data = {id, notes}
-      client(`list-items/${id}`, {method: 'PUT', data, token: user.token})
-    },
+  const [mutate] = useMutation(
+    updates =>
+      client(`list-items/${updates.id}`, {
+        method: 'PUT',
+        data: updates,
+        token: user.token,
+      }),
     {onSettled: () => queryCache.invalidateQueries('list-items')},
   )
-  const debouncedMutate = React.useMemo(
-    () => debounceFn(mutateUpdateNotes, {wait: 300}),
-    [mutateUpdateNotes],
-  )
+  const debouncedMutate = React.useMemo(() => debounceFn(mutate, {wait: 300}), [
+    mutate,
+  ])
 
   function handleNotesChange(e) {
     debouncedMutate({id: listItem.id, notes: e.target.value})

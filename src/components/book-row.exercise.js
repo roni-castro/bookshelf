@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import {jsx} from '@emotion/core'
-import React from 'react'
+
 import {Link} from 'react-router-dom'
 import {useQuery} from 'react-query'
 import {client} from 'utils/api-client'
@@ -12,14 +12,12 @@ import {Rating} from './rating'
 function BookRow({user, book}) {
   const {title, author, coverImageUrl} = book
 
-  const {data} = useQuery(['list-items'], () => {
-    return client(`list-items`, {token: user.token})
+  const {data: listItems} = useQuery({
+    queryKey: 'list-items',
+    queryFn: () =>
+      client(`list-items`, {token: user.token}).then(data => data.listItems),
   })
-
-  const listItem = React.useMemo(
-    () => data?.listItems.find(item => item.bookId === book.id),
-    [book.id, data],
-  )
+  const listItem = listItems?.find(li => li.bookId === book.id) ?? null
 
   const id = `book-row-book-${book.id}`
 
