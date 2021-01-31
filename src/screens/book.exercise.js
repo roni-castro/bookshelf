@@ -9,6 +9,7 @@ import {useParams} from 'react-router-dom'
 import {useQuery, useMutation, queryCache} from 'react-query'
 import {client} from 'utils/api-client'
 import {formatDate} from 'utils/misc'
+import {useBook} from 'utils/books'
 import * as mq from 'styles/media-queries'
 import * as colors from 'styles/colors'
 import {Textarea} from 'components/lib'
@@ -27,11 +28,7 @@ const loadingBook = {
 
 function BookScreen({user}) {
   const {bookId} = useParams()
-  const {data: book = loadingBook} = useQuery({
-    queryKey: ['book', {bookId}],
-    queryFn: () =>
-      client(`books/${bookId}`, {token: user.token}).then(data => data.book),
-  })
+  const {data: book = loadingBook} = useBook(bookId, user)
 
   const {data: listItems} = useQuery({
     queryKey: 'list-items',
