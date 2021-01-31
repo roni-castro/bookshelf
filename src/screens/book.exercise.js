@@ -11,10 +11,9 @@ import {useListItem, useUpdateListItem} from 'utils/list-items'
 import {formatDate} from 'utils/misc'
 import * as mq from 'styles/media-queries'
 import * as colors from 'styles/colors'
-import {Textarea} from 'components/lib'
+import {Textarea, ErrorMessage} from 'components/lib'
 import {Rating} from 'components/rating'
 import {StatusButtons} from 'components/status-buttons'
-import {ErrorMessage} from 'components/lib'
 
 function BookScreen({user}) {
   const {bookId} = useParams()
@@ -127,6 +126,13 @@ function NotesTextarea({listItem, user}) {
         >
           Notes
         </label>
+        {isError ? (
+          <ErrorMessage
+            error={error}
+            variant="inline"
+            css={{marginLeft: 6, fontSize: '0.7em'}}
+          />
+        ) : null}
       </div>
       <Textarea
         id="notes"
@@ -134,13 +140,6 @@ function NotesTextarea({listItem, user}) {
         onChange={handleNotesChange}
         css={{width: '100%', minHeight: 300}}
       />
-      {isError ? (
-        <ErrorMessage
-          error={error}
-          variant="inline"
-          css={{marginLeft: 6, fontSize: '0.7em'}}
-        />
-      ) : null}
     </React.Fragment>
   )
 }
