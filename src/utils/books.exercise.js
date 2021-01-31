@@ -7,3 +7,13 @@ export function useBook(bookId, user) {
       client(`books/${bookId}`, {token: user.token}).then(data => data.book),
   })
 }
+
+export function useBookSearch(query, user) {
+  return useQuery({
+    queryKey: ['bookSearch', {query}],
+    queryFn: () =>
+      client(`books?query=${encodeURIComponent(query)}`, {
+        token: user.token,
+      }).then(data => data.books),
+  })
+}

@@ -4,8 +4,7 @@ import {jsx} from '@emotion/core'
 import * as React from 'react'
 import Tooltip from '@reach/tooltip'
 import {FaSearch, FaTimes} from 'react-icons/fa'
-import {useQuery} from 'react-query'
-import {client} from 'utils/api-client'
+import {useBookSearch} from 'utils/books'
 import * as colors from 'styles/colors'
 import {BookRow} from 'components/book-row'
 import {BookListUL, Spinner, Input} from 'components/lib'
@@ -35,13 +34,7 @@ function DiscoverBooksScreen({user}) {
     isLoading,
     isError,
     isSuccess,
-  } = useQuery({
-    queryKey: ['bookSearch', {query}],
-    queryFn: () =>
-      client(`books?query=${encodeURIComponent(query)}`, {
-        token: user.token,
-      }).then(data => data.books),
-  })
+  } = useBookSearch(query, user)
 
   function handleSearchSubmit(event) {
     event.preventDefault()
