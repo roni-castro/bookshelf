@@ -10,8 +10,9 @@ import {
   FaTimesCircle,
 } from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
-import {useQuery, useMutation, queryCache} from 'react-query'
+import {useMutation, queryCache} from 'react-query'
 import {client} from 'utils/api-client'
+import {useListItems} from 'utils/list-items'
 import {useAsync} from 'utils/hooks'
 import * as colors from 'styles/colors'
 import {CircleButton, Spinner} from './lib'
@@ -48,11 +49,7 @@ function TooltipButton({label, highlight, onClick, icon, ...rest}) {
 }
 
 function StatusButtons({user, book}) {
-  const {data: listItems} = useQuery({
-    queryKey: 'list-items',
-    queryFn: () =>
-      client(`list-items`, {token: user.token}).then(data => data.listItems),
-  })
+  const {data: listItems} = useListItems(user)
   const listItem = listItems?.find(li => li.bookId === book.id) ?? null
 
   const [update] = useMutation(
