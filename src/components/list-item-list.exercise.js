@@ -11,7 +11,8 @@ function ListItemList({
   noListItems,
   noFilteredListItems,
 }) {
-  const {listItems} = useListItems(user)
+  const listItems = useListItems(user)
+
   const filteredListItems = listItems.filter(filterListItems)
 
   if (!listItems.length) {
