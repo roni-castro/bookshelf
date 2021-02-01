@@ -35,7 +35,21 @@ function useUpdateListItem(user, options) {
         data: updates,
         token: user.token,
       }),
-    {...defaultMutationOptions, ...options},
+    {
+      ...defaultMutationOptions,
+      ...options,
+      onMutate(data) {
+        const newListItems = queryCache
+          .getQueryData(`list-items`)
+          .map(listItem =>
+            listItem.id === data.id ? {...listItem, ...data} : listItem,
+          )
+        queryCache.setQueryData(`list-items`, newListItems)
+      },
+      onError() {
+        queryCache.invalidateQueries('list-items')
+      },
+    },
   )
 }
 
