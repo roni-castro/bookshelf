@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import {useQuery, useMutation, queryCache} from 'react-query'
 import {AuthContext} from 'context/auth-context'
 import {setQueryDataForBook} from './books'
@@ -20,8 +20,7 @@ function useListItems() {
 }
 
 function useListItem(bookId) {
-  const {user} = React.useContext(AuthContext)
-  const listItems = useListItems(user)
+  const listItems = useListItems()
   return listItems.find(li => li.bookId === bookId) ?? null
 }
 

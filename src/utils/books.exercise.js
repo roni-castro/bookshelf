@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import {useQuery, queryCache} from 'react-query'
 import {AuthContext} from 'context/auth-context'
 import {client} from './api-client'
@@ -51,11 +51,13 @@ function useBook(bookId) {
 
 function useRefetchBookSearchQuery() {
   const {user} = React.useContext(AuthContext)
-
-  return React.useCallback(async () => {
-    queryCache.removeQueries('bookSearch')
-    await queryCache.prefetchQuery(getBookSearchConfig('', user))
-  }, [user])
+  return React.useCallback(
+    async function refetchBookSearchQuery() {
+      queryCache.removeQueries('bookSearch')
+      await queryCache.prefetchQuery(getBookSearchConfig('', user))
+    },
+    [user],
+  )
 }
 
 const bookQueryConfig = {
