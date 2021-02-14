@@ -7,7 +7,7 @@ import {BrowserRouter as Router} from 'react-router-dom'
 import {FullPageSpinner, FullPageErrorFallback} from './components/lib'
 import {client} from './utils/api-client'
 import {useAsync} from './utils/hooks'
-// 🐨 import the AuthContext you created in ./context/auth-context
+import {AuthContext} from 'context/auth-context'
 import {AuthenticatedApp} from './authenticated-app'
 import {UnauthenticatedApp} from './unauthenticated-app'
 
@@ -56,15 +56,20 @@ function App() {
 
   if (isSuccess) {
     const props = {user, login, register, logout}
-    // 🐨 wrap all of this in the AuthContext.Provider and set the `value` to props
+    const AuthProvider = ({children}) => (
+      <AuthContext.Provider value={props} children={children} />
+    )
+
     return user ? (
       <Router>
-        {/* 💣 remove the props spread here */}
-        <AuthenticatedApp {...props} />
+        <AuthProvider>
+          <AuthenticatedApp {...props} />
+        </AuthProvider>
       </Router>
     ) : (
-      // 💣 remove the props spread here
-      <UnauthenticatedApp {...props} />
+      <AuthProvider>
+        <UnauthenticatedApp {...props} />
+      </AuthProvider>
     )
   }
 }
