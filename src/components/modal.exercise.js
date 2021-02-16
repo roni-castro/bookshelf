@@ -6,6 +6,8 @@ import {Dialog} from './lib'
 
 const ModalContext = React.createContext()
 
+const callAll = (...callbacks) => callbacks.forEach(callback => callback?.())
+
 function Modal(props) {
   const [isOpen, setIsOpen] = React.useState(false)
 
@@ -15,14 +17,14 @@ function Modal(props) {
 function ModalDismissButton({children: child}) {
   const [, setIsOpen] = React.useContext(ModalContext)
   return React.cloneElement(child, {
-    onClick: () => setIsOpen(false),
+    onClick: () => callAll(() => setIsOpen(false), child.props.onClick),
   })
 }
 
 function ModalOpenButton({children: child}) {
   const [, setIsOpen] = React.useContext(ModalContext)
   return React.cloneElement(child, {
-    onClick: () => setIsOpen(true),
+    onClick: () => callAll(() => setIsOpen(true), child.props.onClick),
   })
 }
 
