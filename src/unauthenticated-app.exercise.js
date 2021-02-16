@@ -14,8 +14,8 @@ import {
 import {
   Modal,
   ModalDismissButton,
-  ModalOpenButton,
   ModalContents,
+  ModalOpenButton,
 } from './components/modal'
 import {Logo} from './components/logo'
 import {useAuth} from './context/auth-context'
@@ -72,6 +72,17 @@ function LoginForm({onSubmit, submitButton}) {
   )
 }
 
+const circleDismissButton = (
+  <div css={{display: 'flex', justifyContent: 'flex-end'}}>
+    <ModalDismissButton>
+      <CircleButton>
+        <VisuallyHidden>Close</VisuallyHidden>
+        <span aria-hidden>×</span>
+      </CircleButton>
+    </ModalDismissButton>
+  </div>
+)
+
 function UnauthenticatedApp() {
   const {login, register} = useAuth()
   return (
@@ -99,14 +110,7 @@ function UnauthenticatedApp() {
             <Button variant="primary">Login</Button>
           </ModalOpenButton>
           <ModalContents aria-label="Login form">
-            <div css={{display: 'flex', justifyContent: 'flex-end'}}>
-              <ModalDismissButton>
-                <CircleButton>
-                  <VisuallyHidden>Close</VisuallyHidden>
-                  <span aria-hidden>×</span>
-                </CircleButton>
-              </ModalDismissButton>
-            </div>
+            {circleDismissButton}
             <h3 css={{textAlign: 'center', fontSize: '2em'}}>Login</h3>
             <LoginForm
               onSubmit={login}
@@ -119,18 +123,11 @@ function UnauthenticatedApp() {
             <Button variant="secondary">Register</Button>
           </ModalOpenButton>
           <ModalContents aria-label="Registration form">
-            <div css={{display: 'flex', justifyContent: 'flex-end'}}>
-              <ModalDismissButton>
-                <CircleButton>
-                  <VisuallyHidden>Close</VisuallyHidden>
-                  <span aria-hidden>×</span>
-                </CircleButton>
-              </ModalDismissButton>
-            </div>
+            {circleDismissButton}
             <h3 css={{textAlign: 'center', fontSize: '2em'}}>Register</h3>
             <LoginForm
               onSubmit={register}
-              submitButton={<Button variant="primary">Register</Button>}
+              submitButton={<Button variant="secondary">Register</Button>}
             />
           </ModalContents>
         </Modal>

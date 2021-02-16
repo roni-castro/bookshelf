@@ -1,44 +1,36 @@
-import React from 'react'
+/** @jsx jsx */
+import {jsx} from '@emotion/core'
+
+import * as React from 'react'
 import {Dialog} from './lib'
 
 const ModalContext = React.createContext()
 
-function useModal() {
-  const context = React.useContext(ModalContext)
-  if (!context) {
-    throw new Error('useModal must be used within a <Modal>')
-  }
-  return context
-}
-
 function Modal(props) {
   const [isOpen, setIsOpen] = React.useState(false)
 
-  const value = {isOpen, setIsOpen}
-  return <ModalContext.Provider value={value} {...props} />
+  return <ModalContext.Provider value={[isOpen, setIsOpen]} {...props} />
 }
 
-function ModalDismissButton({children}) {
-  const {setIsOpen} = useModal()
-
-  return React.cloneElement(children, {
+function ModalDismissButton({children: child}) {
+  const [, setIsOpen] = React.useContext(ModalContext)
+  return React.cloneElement(child, {
     onClick: () => setIsOpen(false),
   })
 }
 
-function ModalOpenButton({children}) {
-  const {setIsOpen} = useModal()
-  return React.cloneElement(children, {
+function ModalOpenButton({children: child}) {
+  const [, setIsOpen] = React.useContext(ModalContext)
+  return React.cloneElement(child, {
     onClick: () => setIsOpen(true),
   })
 }
 
 function ModalContents(props) {
-  const {isOpen, setIsOpen} = useModal()
-
-  const close = () => setIsOpen(false)
-
-  return <Dialog isOpen={isOpen} onDismiss={close} {...props} />
+  const [isOpen, setIsOpen] = React.useContext(ModalContext)
+  return (
+    <Dialog isOpen={isOpen} onDismiss={() => setIsOpen(false)} {...props} />
+  )
 }
 
 export {Modal, ModalDismissButton, ModalOpenButton, ModalContents}
