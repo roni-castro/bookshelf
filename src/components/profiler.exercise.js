@@ -1,10 +1,11 @@
-import React from 'react'
+import * as React from 'react'
 import {client} from 'utils/api-client'
 
 let queue = []
-setInterval(sendProfilerLogToApi, 5000)
 
-function sendProfilerLogToApi() {
+setInterval(sendProfileQueue, 5000)
+
+function sendProfileQueue() {
   if (!queue.length) {
     return Promise.resolve({success: true})
   }
@@ -13,9 +14,11 @@ function sendProfilerLogToApi() {
   return client('profile', {data: queueToSend})
 }
 
-// this is for extra credit
+// By wrapping the Profile like this, we can set the onRender to whatever
+// we want and we get the additional benefit of being able to include
+// additional data and filter phases
 function Profiler({metadata, phases, ...props}) {
-  function onRenderCallback(
+  function reportProfile(
     id, // the "id" prop of the Profiler tree that has just committed
     phase, // either "mount" (if the tree just mounted) or "update" (if it re-rendered)
     actualDuration, // time spent rendering the committed update
@@ -25,7 +28,7 @@ function Profiler({metadata, phases, ...props}) {
     interactions, // the Set of interactions belonging to this update
   ) {
     if (!phases || phases.includes(phase)) {
-      const data = {
+      queue.push({
         metadata,
         id,
         phase,
@@ -34,11 +37,10 @@ function Profiler({metadata, phases, ...props}) {
         startTime,
         commitTime,
         interactions,
-      }
-      queue.push(data)
+      })
     }
   }
-  return <React.Profiler onRender={onRenderCallback} {...props} />
+  return <React.Profiler onRender={reportProfile} {...props} />
 }
 
-export default Profiler
+export {Profiler}
