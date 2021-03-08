@@ -14,6 +14,7 @@ import * as colors from 'styles/colors'
 import {Spinner, Textarea, ErrorMessage} from 'components/lib'
 import {Rating} from 'components/rating'
 import {StatusButtons} from 'components/status-buttons'
+import Profiler from 'components/profiler.exercise'
 
 function BookScreen() {
   const {bookId} = useParams()
@@ -108,36 +109,46 @@ function NotesTextarea({listItem}) {
   }
 
   return (
-    <React.Fragment>
-      <div>
-        <label
-          htmlFor="notes"
-          css={{
-            display: 'inline-block',
-            marginRight: 10,
-            marginTop: '0',
-            marginBottom: '0.5rem',
-            fontWeight: 'bold',
-          }}
+    <Profiler
+      id="Book Notes"
+      metadata={{extra: `listItem rendered: ${JSON.stringify(listItem)}`}}
+    >
+      <React.Fragment>
+        <div>
+          <label
+            htmlFor="notes"
+            css={{
+              display: 'inline-block',
+              marginRight: 10,
+              marginTop: '0',
+              marginBottom: '0.5rem',
+              fontWeight: 'bold',
+            }}
+          >
+            Notes
+          </label>
+          {isError ? (
+            <ErrorMessage
+              variant="inline"
+              error={error}
+              css={{fontSize: '0.7em'}}
+            />
+          ) : null}
+          {isLoading ? <Spinner /> : null}
+        </div>
+        <Profiler
+          id="Book Note text area"
+          metadata={{extra: `book note text changed`}}
         >
-          Notes
-        </label>
-        {isError ? (
-          <ErrorMessage
-            variant="inline"
-            error={error}
-            css={{fontSize: '0.7em'}}
+          <Textarea
+            id="notes"
+            defaultValue={listItem.notes}
+            onChange={handleNotesChange}
+            css={{width: '100%', minHeight: 300}}
           />
-        ) : null}
-        {isLoading ? <Spinner /> : null}
-      </div>
-      <Textarea
-        id="notes"
-        defaultValue={listItem.notes}
-        onChange={handleNotesChange}
-        css={{width: '100%', minHeight: 300}}
-      />
-    </React.Fragment>
+        </Profiler>
+      </React.Fragment>
+    </Profiler>
   )
 }
 
