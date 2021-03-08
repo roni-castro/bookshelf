@@ -1,5 +1,6 @@
 /** @jsx jsx */
 import {jsx} from '@emotion/core'
+import {trace} from './profiler.exercise'
 
 import * as React from 'react'
 import {
@@ -27,7 +28,9 @@ function TooltipButton({label, highlight, onClick, icon, ...rest}) {
     if (isError) {
       reset()
     } else {
-      run(onClick())
+      trace(`Tooltip clicked ${label}`, performance.now(), () => {
+        run(onClick())
+      })
     }
   }
 

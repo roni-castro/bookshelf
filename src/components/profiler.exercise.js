@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {client} from 'utils/api-client'
+import {unstable_trace as trace, unstable_wrap as wrap} from 'scheduler/tracing'
 
 let queue = []
 
@@ -44,3 +45,4 @@ function Profiler({metadata, phases, ...props}) {
 }
 
 export {Profiler}
+export {unstable_trace as trace, unstable_wrap as wrap} from 'scheduler/tracing'
