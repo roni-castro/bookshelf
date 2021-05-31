@@ -17,7 +17,7 @@ test('calls fetch at the endpoint with the arguments for GET requests', async ()
   )
 
   const response = await client(endpoint)
-  expect(response).toMatchObject(mockResult)
+  expect(response).toEqual(mockResult)
 })
 
 test('adds auth token when a token is provided', async () => {
@@ -68,5 +68,5 @@ test('when data is provided, it is stringified and the method defaults to POST',
     data,
   })
   expect(request.method).toBe('POST')
-  expect(request.body).toMatchObject(data)
+  expect(request.body).toEqual(data)
 })
