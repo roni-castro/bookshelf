@@ -1,7 +1,11 @@
 import {server, rest} from 'test/server'
 import {client} from '../api-client'
+import {queryCache} from 'react-query'
+import * as auth from 'auth-provider'
 
 const apiURL = process.env.REACT_APP_API_URL
+jest.mock('react-query')
+jest.mock('auth-provider')
 
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
@@ -69,4 +73,41 @@ test('when data is provided, it is stringified and the method defaults to POST',
   })
   expect(request.method).toBe('POST')
   expect(request.body).toEqual(data)
+})
+
+test('correctly rejects the promise if there is an error', async () => {
+  const endpoint = 'test-endpoint'
+  const testError = {message: 'Test error'}
+  server.use(
+    rest.get(`${apiURL}/${endpoint}`, async (req, res, ctx) => {
+      return res(ctx.status(400), ctx.json(testError))
+    }),
+  )
+
+  await expect(client(endpoint)).rejects.toEqual(testError)
+})
+
+describe('when request fails with status 401', () => {
+  const endpoint = 'test-endpoint'
+  const errorData = {message: 'Unauthorized'}
+
+  beforeEach(() => {
+    server.use(
+      rest.get(`${apiURL}/${endpoint}`, async (req, res, ctx) => {
+        return res(ctx.status(401), ctx.json(errorData))
+      }),
+    )
+  })
+
+  it('logs the user out', () => {
+    return client(endpoint).catch(() => {
+      expect(auth.logout).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('clears the query cache', () => {
+    return client(endpoint).catch(() => {
+      expect(queryCache.clear).toHaveBeenCalledTimes(1)
+    })
+  })
 })
