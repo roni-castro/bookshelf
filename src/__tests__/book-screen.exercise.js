@@ -5,40 +5,34 @@ import * as auth from 'auth-provider'
 import {buildUser, buildBook} from 'test/generate'
 import {AppProviders} from 'context'
 import {App} from 'app'
+import * as usersDB from 'test/data/users'
+import * as booksDB from 'test/data/books'
 
 // general cleanup
 afterEach(async () => {
   queryCache.clear()
   await auth.logout()
+  await booksDB.reset()
+  await usersDB.reset()
 })
 
 test('renders all the book information', async () => {
   const user = buildUser()
-  window.localStorage.setItem(auth.localStorageKey, 'SOME_FAKE_TOKEN')
+  await usersDB.create(user)
+  const authUser = await usersDB.authenticate(user)
+  window.localStorage.setItem(auth.localStorageKey, authUser.token)
 
-  const book = buildBook()
+  const book = await booksDB.create(buildBook())
+
   const route = `/book/${book.id}`
   window.history.pushState({}, 'Test page', route)
 
-  const originalFetch = window.fetch
-  window.fetch = async (url, config) => {
-    if (url.endsWith('/bootstrap')) {
-      return {
-        ok: true,
-        json: async () => ({
-          user: {...user, token: 'SOME_FAKE_TOKEN'},
-          listItems: [],
-        }),
-      }
-    } else if (url.endsWith(`/books/${book.id}`)) {
-      return {ok: true, json: async () => ({book})}
-    }
-    return originalFetch(url, config)
-  }
-
   render(<App />, {wrapper: AppProviders})
 
-  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i))
+  await waitForElementToBeRemoved(() => [
+    ...screen.queryAllByText(/loading/i),
+    ...screen.queryAllByLabelText(/loading/i),
+  ])
 
   expect(screen.getByRole('heading', {name: book.title})).toBeInTheDocument()
   expect(screen.getByText(book.author)).toBeInTheDocument()
