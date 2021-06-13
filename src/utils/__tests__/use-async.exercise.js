@@ -59,22 +59,23 @@ test('calling run with a promise which resolves', async () => {
   const {result} = renderHook(() => useAsync())
   expect(result.current).toEqual(defaultState)
 
+  let p
   act(() => {
-    result.current.run(promise)
+    p = result.current.run(promise)
   })
 
   expect(result.current).toEqual(pendingState)
 
-  const responseData = {data: 'data'}
+  const dataMock = {data: 'data'}
 
   await act(async () => {
-    resolve(responseData)
-    await promise
+    resolve(dataMock)
+    await p
   })
 
   expect(result.current).toEqual({
     ...resolvedState,
-    data: responseData,
+    data: dataMock,
   })
 
   act(() => {
@@ -90,18 +91,17 @@ test('calling run with a promise which rejects', async () => {
 
   expect(result.current).toEqual(defaultState)
 
-  let promiseReturned
+  let p
   act(() => {
-    promiseReturned = result.current.run(promise)
+    p = result.current.run(promise)
   })
 
   expect(result.current).toEqual(pendingState)
 
   const error = new Error('error message')
-
   await act(async () => {
     reject(error)
-    await promiseReturned.catch(e => e)
+    await p.catch(e => e)
   })
 
   expect(result.current).toEqual({
@@ -129,14 +129,14 @@ test('can specify an initial state', () => {
 test('can set the data', () => {
   const {result} = renderHook(() => useAsync())
 
-  const data = {data: 'data'}
+  const dataMock = {data: 'data'}
   act(() => {
-    result.current.setData(data)
+    result.current.setData(dataMock)
   })
 
   expect(result.current).toEqual({
     ...resolvedState,
-    data: data,
+    data: dataMock,
   })
 })
 
