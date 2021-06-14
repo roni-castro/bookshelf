@@ -24,7 +24,8 @@ async function renderBookScreen({user, book, listItem} = {}) {
     listItem = await listItemsDB.create(buildListItem({owner: user, book}))
   }
   const route = `/book/${book.id}`
-  const utils = await render(<App />, {route, user})
+
+  const utils = await render(<App />, {user, route})
 
   return {
     ...utils,
@@ -111,16 +112,10 @@ test('can remove a list item for the book', async () => {
 })
 
 test('can mark a list item as read', async () => {
-  const user = await loginAsUser()
-  const book = await booksDB.create(buildBook())
-  const listItem = await listItemsDB.create(
-    buildListItem({
-      owner: user,
-      book,
-      finishDate: null,
-    }),
-  )
-  await renderBookScreen({listItem, book, user})
+  const {listItem} = await renderBookScreen()
+
+  // set the listItem to be unread in the DB
+  await listItemsDB.update(listItem.id, {finishDate: null})
 
   const markAsReadButton = screen.getByRole('button', {name: /mark as read/i})
   userEvent.click(markAsReadButton)
