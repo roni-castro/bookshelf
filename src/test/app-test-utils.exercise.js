@@ -1,30 +1,21 @@
-import {render, screen, waitForElementToBeRemoved} from '@testing-library/react'
-import * as auth from 'auth-provider'
+import {
+  render as rtlRender,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import {AppProviders} from 'context'
-import React from 'react'
-import * as usersDB from 'test/data/users'
-import {buildUser} from 'test/generate'
+import * as auth from 'auth-provider'
+import {buildUser} from './generate'
+import * as usersDB from './data/users'
 
-const waitForLoadingToFinish = () =>
-  waitForElementToBeRemoved(() => [
-    ...screen.queryAllByLabelText(/loading/i),
-    ...screen.queryAllByText(/loading/i),
-  ])
-
-const AllTheProviders = ({children}) => {
-  return <AppProviders>{children}</AppProviders>
-}
-
-async function customRender(
-  ui,
-  {route = '/list', user, ...renderOptions} = {},
-) {
+async function render(ui, {route = '/list', user, ...renderOptions} = {}) {
   // if you want to render the app unauthenticated then pass "null" as the user
   user = typeof user === 'undefined' ? await loginAsUser() : user
   window.history.pushState({}, 'Test page', route)
 
   const returnValue = {
-    ...render(ui, {wrapper: AllTheProviders, ...renderOptions}),
+    ...rtlRender(ui, {wrapper: AppProviders, ...renderOptions}),
     user,
   }
 
@@ -41,7 +32,11 @@ async function loginAsUser(userProperties) {
   return authUser
 }
 
-// re-export everything
+const waitForLoadingToFinish = () =>
+  waitForElementToBeRemoved(() => [
+    ...screen.queryAllByLabelText(/loading/i),
+    ...screen.queryAllByText(/loading/i),
+  ])
+
 export * from '@testing-library/react'
-// override render method
-export {customRender as render, waitForLoadingToFinish}
+export {render, userEvent, loginAsUser, waitForLoadingToFinish}

@@ -1,25 +1,14 @@
 import * as React from 'react'
-import {render, screen, waitForLoadingToFinish} from 'test/app-test-utils'
-import userEvent from '@testing-library/user-event'
-import {queryCache} from 'react-query'
-import * as auth from 'auth-provider'
+import {
+  render,
+  screen,
+  waitForLoadingToFinish,
+  userEvent,
+} from 'test/app-test-utils'
 import {buildBook} from 'test/generate'
-import * as usersDB from 'test/data/users'
 import * as booksDB from 'test/data/books'
-import * as listItemsDB from 'test/data/list-items'
 import {formatDate} from 'utils/misc'
 import {App} from 'app'
-
-// general cleanup
-afterEach(async () => {
-  queryCache.clear()
-  await Promise.all([
-    auth.logout(),
-    usersDB.reset(),
-    booksDB.reset(),
-    listItemsDB.reset(),
-  ])
-})
 
 test('renders all the book information', async () => {
   const book = await booksDB.create(buildBook())
