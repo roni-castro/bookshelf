@@ -178,6 +178,7 @@ describe('console errors', () => {
     expect(
       (await screen.findByRole('alert')).textContent,
     ).toMatchInlineSnapshot(`"There was an error: Book not found"`)
+    expect(console.error).toHaveBeenCalled()
   })
 
   test('note update failures are displayed', async () => {
@@ -202,8 +203,8 @@ describe('console errors', () => {
 
     await waitForLoadingToFinish()
 
-    expect(
-      (await screen.findByRole('alert')).textContent,
-    ).toMatchInlineSnapshot(`"There was an error: __test_error_message__"`)
+    expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
+      `"There was an error: __test_error_message__"`,
+    )
   })
 })
