@@ -18,24 +18,19 @@ describe('smoke', () => {
 
     cy.findByRole('main').within(() => {
       cy.findByRole('searchbox', {name: /search/i}).type('harry potter{enter}')
-    })
+      cy.findByRole('listitem', {name: bookNameRegex}).within(() => {
+        cy.findByRole('link', {name: bookNameRegex}).click()
+      })
 
-    cy.findByRole('listitem', {
-      name: bookNameRegex,
-    }).within(() => {
-      cy.findByRole('link', {
-        name: bookNameRegex,
-      }).click()
+      cy.findByRole('button', {name: /add to list/i}).click()
     })
-
-    cy.findByRole('button', {name: /add to list/i}).click()
 
     cy.findByRole('navigation').within(() => {
       cy.findByRole('link', {name: /reading list/i}).click()
     })
 
     cy.findByRole('main').within(() => {
-      cy.findByRole('listitem', {name: bookNameRegex}).should('have.length', 1)
+      cy.findAllByRole('listitem').should('have.length', 1)
       cy.findByRole('link', {name: bookNameRegex}).click()
     })
 
@@ -52,7 +47,7 @@ describe('smoke', () => {
     })
 
     cy.findByRole('main').within(() => {
-      cy.findByRole('listitem', {name: bookNameRegex}).should('have.length', 1)
+      cy.findAllByRole('listitem').should('have.length', 1)
       cy.findByRole('radio', {name: /4 stars/i}).should('be.checked')
       cy.findByRole('link', {name: bookNameRegex}).click()
     })
@@ -66,7 +61,7 @@ describe('smoke', () => {
     })
 
     cy.findByRole('main').within(() => {
-      cy.findByRole('listitem').should('have.length', 0)
+      cy.findAllByRole('listitem').should('have.length', 0)
     })
   })
 })
