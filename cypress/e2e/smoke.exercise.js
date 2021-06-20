@@ -19,10 +19,8 @@ describe('smoke', () => {
     cy.findByRole('main').within(() => {
       cy.findByRole('searchbox', {name: /search/i}).type('harry potter{enter}')
       cy.findByRole('listitem', {name: bookNameRegex}).within(() => {
-        cy.findByRole('link', {name: bookNameRegex}).click()
+        cy.findByRole('button', {name: /add to list/i}).click()
       })
-
-      cy.findByRole('button', {name: /add to list/i}).click()
     })
 
     cy.findByRole('navigation').within(() => {
