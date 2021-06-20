@@ -61,5 +61,15 @@ describe('smoke', () => {
     cy.findByRole('main').within(() => {
       cy.findAllByRole('listitem').should('have.length', 0)
     })
+
+    cy.findByRole('button', {name: /logout/i}).click()
+    cy.findByRole('button', {name: /login/i}).click()
+    cy.findByRole('dialog').within(() => {
+      cy.findByRole('textbox', {name: /username/i}).type(user.username)
+      cy.findByLabelText(/password/i).type(user.password)
+      cy.findByRole('button', {name: /login/i}).click()
+    })
+  
+   cy.findByRole('navigation').should('exist')
   })
 })
